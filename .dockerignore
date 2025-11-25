@@ -1,0 +1,10 @@
+node_modules
+dist
+.git
+.gitignore
+README.md
+.vscode
+.idea
+*.log
+AUTH_SERVICE_CHANGES.md
+IMPLEMENTATION_SUMMARY.md
