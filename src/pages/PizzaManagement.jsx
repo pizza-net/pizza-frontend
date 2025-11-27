@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
-import { getPizzas, addPizza } from '../services/pizzaService';
+import { getPizzas, addPizza, updatePizza, deletePizza } from '../services/pizzaService';
 import './Dashboard.css';
 import './PizzaManagement.css';
 
@@ -10,6 +10,7 @@ const PizzaManagement = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [showForm, setShowForm] = useState(false);
+  const [editingPizza, setEditingPizza] = useState(null);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -66,8 +67,16 @@ const PizzaManagement = () => {
         price: parseFloat(formData.price)
       };
 
-      await addPizza(pizzaData);
-      setSuccess('Pizza została pomyślnie dodana! 🍕');
+      if (editingPizza) {
+        // Edycja istniejącej pizzy
+        await updatePizza(editingPizza.id, pizzaData);
+        setSuccess('Pizza została pomyślnie zaktualizowana! 🍕');
+        setEditingPizza(null);
+      } else {
+        // Dodawanie nowej pizzy
+        await addPizza(pizzaData);
+        setSuccess('Pizza została pomyślnie dodana! 🍕');
+      }
 
       setFormData({
         name: '',
@@ -89,6 +98,54 @@ const PizzaManagement = () => {
     }
   };
 
+  const handleEdit = (pizza) => {
+    setEditingPizza(pizza);
+    setFormData({
+      name: pizza.name,
+      description: pizza.description,
+      price: pizza.price.toString(),
+      size: pizza.size,
+      available: pizza.available
+    });
+    setShowForm(true);
+    setError('');
+    setSuccess('');
+  };
+
+  const handleDelete = async (id, name) => {
+    if (!window.confirm(`Czy na pewno chcesz usunąć pizzę "${name}"?`)) {
+      return;
+    }
+
+    try {
+      setError('');
+      await deletePizza(id);
+      setSuccess(`Pizza "${name}" została usunięta! 🗑️`);
+      await fetchPizzas();
+
+      setTimeout(() => {
+        setSuccess('');
+      }, 3000);
+
+    } catch (err) {
+      setError(err.toString());
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingPizza(null);
+    setShowForm(false);
+    setFormData({
+      name: '',
+      description: '',
+      price: '',
+      size: 'MEDIUM',
+      available: true
+    });
+    setError('');
+    setSuccess('');
+  };
+
   return (
     <div className="dashboard">
       <Navbar />
@@ -103,16 +160,22 @@ const PizzaManagement = () => {
         <div className="action-section">
           <button
             className="add-pizza-btn"
-            onClick={() => setShowForm(!showForm)}
+            onClick={() => {
+              if (showForm) {
+                handleCancelEdit();
+              } else {
+                setShowForm(true);
+              }
+            }}
           >
             {showForm ? '❌ Anuluj' : '➕ Dodaj Nową Pizzę'}
           </button>
         </div>
 
-        {/* Formularz dodawania pizzy */}
+        {/* Formularz dodawania/edycji pizzy */}
         {showForm && (
           <div className="pizza-form-section">
-            <h2>Dodaj Nową Pizzę</h2>
+            <h2>{editingPizza ? 'Edytuj Pizzę' : 'Dodaj Nową Pizzę'}</h2>
 
             {error && (
               <div className="error-box">
@@ -198,7 +261,7 @@ const PizzaManagement = () => {
               </div>
 
               <button type="submit" className="submit-btn">
-                ✅ Dodaj Pizzę
+                {editingPizza ? '✅ Zaktualizuj Pizzę' : '✅ Dodaj Pizzę'}
               </button>
             </form>
           </div>
@@ -237,6 +300,22 @@ const PizzaManagement = () => {
                       <span className="info-value price">{pizza.price.toFixed(2)} PLN</span>
                     </div>
                   </div>
+                  <div className="pizza-actions">
+                    <button
+                      className="edit-btn"
+                      onClick={() => handleEdit(pizza)}
+                      title="Edytuj pizzę"
+                    >
+                      ✏️ Edytuj
+                    </button>
+                    <button
+                      className="delete-btn"
+                      onClick={() => handleDelete(pizza.id, pizza.name)}
+                      title="Usuń pizzę"
+                    >
+                      🗑️ Usuń
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -247,24 +326,6 @@ const PizzaManagement = () => {
               <p>🍕 Brak pizz w menu. Dodaj pierwszą pizzę!</p>
             </div>
           )}
-        </div>
-
-        <div className="info-section">
-          <h2>Informacje o Systemie</h2>
-          <div className="info-cards">
-            <div className="info-card">
-              <h3>🍕 Pizza API</h3>
-              <p>Port: 8082</p>
-            </div>
-            <div className="info-card">
-              <h3>📊 Statystyki</h3>
-              <p>Liczba pizz: {pizzas.length}</p>
-            </div>
-            <div className="info-card">
-              <h3>✅ Dostępne</h3>
-              <p>{pizzas.filter(p => p.available).length} pizz</p>
-            </div>
-          </div>
         </div>
       </div>
     </div>

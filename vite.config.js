@@ -1,13 +1,24 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
   server: {
+    host: true,
+    port: 5173,
     proxy: {
-      '/api': {
-        target: process.env.VITE_API_URL || 'http://localhost:8080',
+      // 1. Ruch do autoryzacji kierujemy prosto do auth-service
+      '/api/auth': {
+        target: 'http://auth-service:8081', // Bezpośrednio do kontenera Auth
+        changeOrigin: true,
+        secure: false,
+        // Usuwamy prefiks /api, bo auth-service spodziewa się /auth/...
+        rewrite: (path) => path.replace(/^\/api/, '')
+      },
+
+      // 2. Ruch do pizzy kierujemy prosto do menu-service
+      '/api/pizza': {
+        target: 'http://menu-service:8081', // Bezpośrednio do kontenera Menu
         changeOrigin: true,
         secure: false,
       }

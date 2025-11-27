@@ -1,0 +1,23 @@
+# Używamy obrazu z Node.js (nie Nginx!)
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Najpierw kopiujemy definicje zależności
+COPY package.json .
+COPY package-lock.json .
+
+# Instalujemy biblioteki
+RUN npm install
+
+# Kopiujemy resztę plików
+COPY . .
+
+# Otwieramy port (dla Vite 5173, dla React App 3000)
+EXPOSE 5173
+
+# Uruchamiamy serwer deweloperski
+# Jeśli używasz Vite:
+CMD ["npm", "run", "dev", "--", "--host"]
+# Jeśli używasz Create React App (stary sposób):
+# CMD ["npm", "start"]
