@@ -17,7 +17,8 @@ const PizzaManagement = () => {
     description: '',
     price: '',
     size: 'MEDIUM',
-    available: true
+    available: true,
+    imageUrl: ''
   });
 
   useEffect(() => {
@@ -83,7 +84,8 @@ const PizzaManagement = () => {
         description: '',
         price: '',
         size: 'MEDIUM',
-        available: true
+        available: true,
+        imageUrl: ''
       });
 
       await fetchPizzas();
@@ -105,7 +107,8 @@ const PizzaManagement = () => {
       description: pizza.description,
       price: pizza.price.toString(),
       size: pizza.size,
-      available: pizza.available
+      available: pizza.available,
+      imageUrl: pizza.imageUrl || ''
     });
     setShowForm(true);
     setError('');
@@ -140,7 +143,8 @@ const PizzaManagement = () => {
       description: '',
       price: '',
       size: 'MEDIUM',
-      available: true
+      available: true,
+      imageUrl: ''
     });
     setError('');
     setSuccess('');
@@ -216,6 +220,23 @@ const PizzaManagement = () => {
                 />
               </div>
 
+              <div className="form-group">
+                <label htmlFor="imageUrl">URL Zdjęcia</label>
+                <input
+                  type="url"
+                  id="imageUrl"
+                  name="imageUrl"
+                  value={formData.imageUrl}
+                  onChange={handleInputChange}
+                  placeholder="https://example.com/pizza-image.jpg"
+                />
+                {formData.imageUrl && (
+                  <div className="image-preview">
+                    <img src={formData.imageUrl} alt="Podgląd pizzy" />
+                  </div>
+                )}
+              </div>
+
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="price">Cena (PLN) *</label>
@@ -283,6 +304,11 @@ const PizzaManagement = () => {
             <div className="pizza-grid">
               {pizzas.map((pizza) => (
                 <div key={pizza.id} className="pizza-card">
+                  {pizza.imageUrl && (
+                    <div className="pizza-image">
+                      <img src={pizza.imageUrl} alt={pizza.name} />
+                    </div>
+                  )}
                   <div className="pizza-header">
                     <h3>{pizza.name}</h3>
                     <span className={`availability-badge ${pizza.available ? 'available' : 'unavailable'}`}>
