@@ -18,6 +18,15 @@ const Navbar = () => {
           <h1>🍕 Pizza Net</h1>
         </div>
         
+        <div className="navbar-menu">
+          <button onClick={() => navigate('/dashboard')} className="nav-btn">
+            📊 Dashboard
+          </button>
+          <button onClick={() => navigate('/pizzas')} className="nav-btn">
+            🍕 Pizze
+          </button>
+        </div>
+
         <div className="navbar-user">
           <span className="username">Welcome, {user?.username}!</span>
           <button onClick={handleLogout} className="logout-btn">
