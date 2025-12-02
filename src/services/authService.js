@@ -38,6 +38,22 @@ api.interceptors.response.use(
 );
 
 /**
+ * Rejestracja użytkownika
+ * @param {string} username
+ * @param {string} email
+ * @param {string} password
+ * @returns {Promise<Object>} { message }
+ */
+export const register = async (username, email, password) => {
+  try {
+    const response = await api.post('/register', { username, email, password });
+    return { success: true, message: response.data };
+  } catch (error) {
+    throw error.response?.data || 'Registration failed';
+  }
+};
+
+/**
  * Logowanie użytkownika
  * @param {string} username 
  * @param {string} password 
@@ -74,7 +90,7 @@ export const verifyToken = async () => {
   try {
     const response = await api.get('/verify');
     return response.status === 200;
-  } catch (error) {
+  } catch {
     return false;
   }
 };
@@ -87,8 +103,8 @@ export const getUsers = async () => {
   try {
     const response = await api.get('/users');
     return response.data;
-  } catch (error) {
-    throw error.response?.data?.message || 'Failed to fetch users';
+  } catch (err) {
+    throw err.response?.data?.message || 'Failed to fetch users';
   }
 };
 
@@ -109,6 +125,7 @@ export const getCurrentUsername = () => {
 };
 
 export default {
+  register,
   login,
   logout,
   verifyToken,
