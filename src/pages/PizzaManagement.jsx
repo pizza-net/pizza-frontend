@@ -11,14 +11,14 @@ const PizzaManagement = () => {
   const [success, setSuccess] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [editingPizza, setEditingPizza] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
 
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     price: '',
     size: 'MEDIUM',
-    available: true
+    available: true,
+    imageUrl: ''
   });
 
   useEffect(() => {
@@ -69,10 +69,12 @@ const PizzaManagement = () => {
       };
 
       if (editingPizza) {
+        // Edycja istniejącej pizzy
         await updatePizza(editingPizza.id, pizzaData);
         setSuccess('Pizza została pomyślnie zaktualizowana! 🍕');
         setEditingPizza(null);
       } else {
+        // Dodawanie nowej pizzy
         await addPizza(pizzaData);
         setSuccess('Pizza została pomyślnie dodana! 🍕');
       }
@@ -82,7 +84,8 @@ const PizzaManagement = () => {
         description: '',
         price: '',
         size: 'MEDIUM',
-        available: true
+        available: true,
+        imageUrl: ''
       });
 
       await fetchPizzas();
@@ -104,27 +107,29 @@ const PizzaManagement = () => {
       description: pizza.description,
       price: pizza.price.toString(),
       size: pizza.size,
-      available: pizza.available
+      available: pizza.available,
+      imageUrl: pizza.imageUrl || ''
     });
     setShowForm(true);
     setError('');
     setSuccess('');
   };
 
-  const handleDelete = async (id, pizzaName) => {
-    if (!window.confirm(`Czy na pewno chcesz usunąć pizzę "${pizzaName}"?`)) {
+  const handleDelete = async (id, name) => {
+    if (!window.confirm(`Czy na pewno chcesz usunąć pizzę "${name}"?`)) {
       return;
     }
 
     try {
       setError('');
       await deletePizza(id);
-      setSuccess(`Pizza "${pizzaName}" została usunięta! 🗑️`);
+      setSuccess(`Pizza "${name}" została usunięta! 🗑️`);
       await fetchPizzas();
 
       setTimeout(() => {
         setSuccess('');
       }, 3000);
+
     } catch (err) {
       setError(err.toString());
     }
@@ -138,14 +143,12 @@ const PizzaManagement = () => {
       description: '',
       price: '',
       size: 'MEDIUM',
-      available: true
+      available: true,
+      imageUrl: ''
     });
     setError('');
+    setSuccess('');
   };
-
-  const filteredPizzas = pizzas.filter(pizza =>
-    pizza.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   return (
     <div className="dashboard">
@@ -162,20 +165,10 @@ const PizzaManagement = () => {
           <button
             className="add-pizza-btn"
             onClick={() => {
-              if (showForm && editingPizza) {
+              if (showForm) {
                 handleCancelEdit();
               } else {
-                setShowForm(!showForm);
-                if (!showForm) {
-                  setEditingPizza(null);
-                  setFormData({
-                    name: '',
-                    description: '',
-                    price: '',
-                    size: 'MEDIUM',
-                    available: true
-                  });
-                }
+                setShowForm(true);
               }
             }}
           >
@@ -183,10 +176,10 @@ const PizzaManagement = () => {
           </button>
         </div>
 
-        {/* Formularz dodawania pizzy */}
+        {/* Formularz dodawania/edycji pizzy */}
         {showForm && (
           <div className="pizza-form-section">
-            <h2>{editingPizza ? '✏️ Edytuj Pizzę' : 'Dodaj Nową Pizzę'}</h2>
+            <h2>{editingPizza ? 'Edytuj Pizzę' : 'Dodaj Nową Pizzę'}</h2>
 
             {error && (
               <div className="error-box">
@@ -225,6 +218,23 @@ const PizzaManagement = () => {
                   rows="3"
                   required
                 />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="imageUrl">URL Zdjęcia</label>
+                <input
+                  type="url"
+                  id="imageUrl"
+                  name="imageUrl"
+                  value={formData.imageUrl}
+                  onChange={handleInputChange}
+                  placeholder="https://example.com/pizza-image.jpg"
+                />
+                {formData.imageUrl && (
+                  <div className="image-preview">
+                    <img src={formData.imageUrl} alt="Podgląd pizzy" />
+                  </div>
+                )}
               </div>
 
               <div className="form-row">
@@ -272,7 +282,7 @@ const PizzaManagement = () => {
               </div>
 
               <button type="submit" className="submit-btn">
-                {editingPizza ? '💾 Zapisz Zmiany' : '✅ Dodaj Pizzę'}
+                {editingPizza ? '✅ Zaktualizuj Pizzę' : '✅ Dodaj Pizzę'}
               </button>
             </form>
           </div>
@@ -281,28 +291,6 @@ const PizzaManagement = () => {
         {/* Lista pizz */}
         <div className="users-section">
           <h2>Lista Pizz</h2>
-
-          {/* Wyszukiwarka */}
-          {!loading && pizzas.length > 0 && (
-            <div className="search-section">
-              <input
-                type="text"
-                placeholder="🔍 Szukaj pizzy po nazwie..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="search-input"
-              />
-              {searchTerm && (
-                <button
-                  className="clear-search-btn"
-                  onClick={() => setSearchTerm('')}
-                  title="Wyczyść wyszukiwanie"
-                >
-                  ✕
-                </button>
-              )}
-            </div>
-          )}
 
           {loading && <p className="loading">Ładowanie pizz...</p>}
 
@@ -313,53 +301,50 @@ const PizzaManagement = () => {
           )}
 
           {!loading && !error && pizzas.length > 0 && (
-            <>
-              {filteredPizzas.length > 0 ? (
-                <div className="pizza-grid">
-                  {filteredPizzas.map((pizza) => (
-                    <div key={pizza.id} className="pizza-card">
-                      <div className="pizza-header">
-                        <h3>{pizza.name}</h3>
-                        <span className={`availability-badge ${pizza.available ? 'available' : 'unavailable'}`}>
-                          {pizza.available ? '✓ Dostępna' : '✗ Niedostępna'}
-                        </span>
-                      </div>
-                      <p className="pizza-description">{pizza.description}</p>
-                      <div className="pizza-details">
-                        <div className="pizza-info-item">
-                          <span className="info-label">Rozmiar:</span>
-                          <span className="info-value">{pizza.size}</span>
-                        </div>
-                        <div className="pizza-info-item">
-                          <span className="info-label">Cena:</span>
-                          <span className="info-value price">{pizza.price.toFixed(2)} PLN</span>
-                        </div>
-                      </div>
-                      <div className="pizza-actions">
-                        <button
-                          className="edit-btn"
-                          onClick={() => handleEdit(pizza)}
-                          title="Edytuj pizzę"
-                        >
-                          ✏️ Edytuj
-                        </button>
-                        <button
-                          className="delete-btn"
-                          onClick={() => handleDelete(pizza.id, pizza.name)}
-                          title="Usuń pizzę"
-                        >
-                          🗑️ Usuń
-                        </button>
-                      </div>
+            <div className="pizza-grid">
+              {pizzas.map((pizza) => (
+                <div key={pizza.id} className="pizza-card">
+                  {pizza.imageUrl && (
+                    <div className="pizza-image">
+                      <img src={pizza.imageUrl} alt={pizza.name} />
                     </div>
-                  ))}
+                  )}
+                  <div className="pizza-header">
+                    <h3>{pizza.name}</h3>
+                    <span className={`availability-badge ${pizza.available ? 'available' : 'unavailable'}`}>
+                      {pizza.available ? '✓ Dostępna' : '✗ Niedostępna'}
+                    </span>
+                  </div>
+                  <p className="pizza-description">{pizza.description}</p>
+                  <div className="pizza-details">
+                    <div className="pizza-info-item">
+                      <span className="info-label">Rozmiar:</span>
+                      <span className="info-value">{pizza.size}</span>
+                    </div>
+                    <div className="pizza-info-item">
+                      <span className="info-label">Cena:</span>
+                      <span className="info-value price">{pizza.price.toFixed(2)} PLN</span>
+                    </div>
+                  </div>
+                  <div className="pizza-actions">
+                    <button
+                      className="edit-btn"
+                      onClick={() => handleEdit(pizza)}
+                      title="Edytuj pizzę"
+                    >
+                      ✏️ Edytuj
+                    </button>
+                    <button
+                      className="delete-btn"
+                      onClick={() => handleDelete(pizza.id, pizza.name)}
+                      title="Usuń pizzę"
+                    >
+                      🗑️ Usuń
+                    </button>
+                  </div>
                 </div>
-              ) : (
-                <div className="no-data">
-                  <p>🔍 Nie znaleziono pizzy o nazwie "{searchTerm}"</p>
-                </div>
-              )}
-            </>
+              ))}
+            </div>
           )}
 
           {!loading && !error && pizzas.length === 0 && (

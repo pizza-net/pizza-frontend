@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Login.css';
 
@@ -78,6 +78,10 @@ const Login = () => {
           <p><strong>Demo credentials:</strong></p>
           <p>Username: admin</p>
           <p>Password: admin123</p>
+        </div>
+
+        <div className="register-link">
+          <p>Nie masz konta? <Link to="/register">Zarejestruj się</Link></p>
         </div>
       </div>
     </div>
