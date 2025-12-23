@@ -4,6 +4,7 @@ import Login from './components/Login';
 import Register from './components/Register';
 import Dashboard from './pages/Dashboard';
 import PizzaManagement from './pages/PizzaManagement';
+import DeliveryManagement from './pages/DeliveryManagement';
 import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
@@ -27,6 +28,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <PizzaManagement />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/deliveries"
+            element={
+              <ProtectedRoute>
+                <DeliveryManagement />
               </ProtectedRoute>
             }
           />

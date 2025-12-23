@@ -1,0 +1,374 @@
+import React, { useState, useEffect } from 'react';
+import Navbar from '../components/Navbar';
+import {
+  getAllDeliveries,
+  createDelivery,
+  updateDeliveryStatus,
+  assignCourier,
+  deleteDelivery,
+} from '../services/deliveryService';
+import './Dashboard.css';
+import './DeliveryManagement.css';
+
+const DeliveryManagement = () => {
+  const [deliveries, setDeliveries] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [filterStatus, setFilterStatus] = useState('');
+
+  // Formularz nowej dostawy
+  const [newDelivery, setNewDelivery] = useState({
+    orderId: '',
+    customerId: '',
+    deliveryAddress: '',
+    customerPhone: '',
+    notes: '',
+    latitude: '',
+    longitude: '',
+  });
+
+  const statusOptions = [
+    'PENDING',
+    'ASSIGNED',
+    'PICKED_UP',
+    'IN_TRANSIT',
+    'DELIVERED',
+    'CANCELLED',
+  ];
+
+  const statusColors = {
+    PENDING: '#ffc107',
+    ASSIGNED: '#17a2b8',
+    PICKED_UP: '#007bff',
+    IN_TRANSIT: '#6f42c1',
+    DELIVERED: '#28a745',
+    CANCELLED: '#dc3545',
+  };
+
+  const statusLabels = {
+    PENDING: 'Oczekująca',
+    ASSIGNED: 'Przypisana',
+    PICKED_UP: 'Odebrana',
+    IN_TRANSIT: 'W drodze',
+    DELIVERED: 'Dostarczona',
+    CANCELLED: 'Anulowana',
+  };
+
+  // Pobierz dostawy
+  useEffect(() => {
+    fetchDeliveries();
+  }, [filterStatus]);
+
+  const fetchDeliveries = async () => {
+    try {
+      setLoading(true);
+      const filters = filterStatus ? { status: filterStatus } : {};
+      const data = await getAllDeliveries(filters);
+      setDeliveries(data);
+      setError('');
+    } catch (err) {
+      setError(err.message || 'Błąd podczas pobierania dostaw');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Utwórz dostawę
+  const handleCreateDelivery = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
+
+    try {
+      await createDelivery({
+        ...newDelivery,
+        orderId: Number(newDelivery.orderId),
+        customerId: Number(newDelivery.customerId),
+        latitude: newDelivery.latitude ? Number(newDelivery.latitude) : null,
+        longitude: newDelivery.longitude ? Number(newDelivery.longitude) : null,
+      });
+      setShowCreateForm(false);
+      setNewDelivery({
+        orderId: '',
+        customerId: '',
+        deliveryAddress: '',
+        customerPhone: '',
+        notes: '',
+        latitude: '',
+        longitude: '',
+      });
+      setSuccess('Dostawa utworzona pomyślnie!');
+      fetchDeliveries();
+    } catch (err) {
+      setError(err.message || 'Błąd podczas tworzenia dostawy');
+      console.error('Błąd:', err);
+    }
+  };
+
+  // Zmień status
+  const handleStatusChange = async (id, newStatus) => {
+    setError('');
+    setSuccess('');
+
+    try {
+      await updateDeliveryStatus(id, newStatus);
+      setSuccess('Status zaktualizowany pomyślnie!');
+      fetchDeliveries();
+    } catch (err) {
+      setError(err.message || 'Błąd podczas zmiany statusu');
+      console.error('Błąd:', err);
+    }
+  };
+
+  // Przypisz kuriera
+  const handleAssignCourier = async (id) => {
+    const courierId = prompt('Podaj ID kuriera:');
+    if (!courierId) return;
+
+    setError('');
+    setSuccess('');
+
+    try {
+      await assignCourier(id, Number(courierId));
+      setSuccess('Kurier przypisany pomyślnie!');
+      fetchDeliveries();
+    } catch (err) {
+      setError(err.message || 'Błąd podczas przypisywania kuriera');
+      console.error('Błąd:', err);
+    }
+  };
+
+  // Usuń dostawę
+  const handleDeleteDelivery = async (id) => {
+    if (!window.confirm('Czy na pewno chcesz usunąć tę dostawę?')) return;
+
+    setError('');
+    setSuccess('');
+
+    try {
+      await deleteDelivery(id);
+      setSuccess('Dostawa usunięta pomyślnie!');
+      fetchDeliveries();
+    } catch (err) {
+      setError(err.message || 'Błąd podczas usuwania dostawy');
+      console.error('Błąd:', err);
+    }
+  };
+
+  if (loading) return (
+    <div className="delivery-management">
+      <Navbar />
+      <div className="loading">Ładowanie dostaw...</div>
+    </div>
+  );
+
+  return (
+    <div className="delivery-management">
+      <Navbar />
+
+      <div className="delivery-content">
+        <div className="header">
+          <h1>🚚 Zarządzanie Dostawami</h1>
+          <button
+            className="btn btn-primary"
+            onClick={() => setShowCreateForm(!showCreateForm)}
+          >
+            {showCreateForm ? 'Anuluj' : '+ Nowa Dostawa'}
+          </button>
+        </div>
+
+      {error && <div className="alert alert-error">{error}</div>}
+      {success && <div className="alert alert-success">{success}</div>}
+
+      {/* Formularz tworzenia dostawy */}
+      {showCreateForm && (
+        <form className="create-form" onSubmit={handleCreateDelivery}>
+          <h2>Nowa Dostawa</h2>
+          <div className="form-grid">
+            <input
+              type="number"
+              placeholder="ID Zamówienia *"
+              value={newDelivery.orderId}
+              onChange={(e) =>
+                setNewDelivery({ ...newDelivery, orderId: e.target.value })
+              }
+              required
+            />
+            <input
+              type="number"
+              placeholder="ID Klienta *"
+              value={newDelivery.customerId}
+              onChange={(e) =>
+                setNewDelivery({ ...newDelivery, customerId: e.target.value })
+              }
+              required
+            />
+            <input
+              type="text"
+              placeholder="Adres dostawy *"
+              value={newDelivery.deliveryAddress}
+              onChange={(e) =>
+                setNewDelivery({
+                  ...newDelivery,
+                  deliveryAddress: e.target.value,
+                })
+              }
+              required
+            />
+            <input
+              type="tel"
+              placeholder="Telefon klienta *"
+              value={newDelivery.customerPhone}
+              onChange={(e) =>
+                setNewDelivery({
+                  ...newDelivery,
+                  customerPhone: e.target.value,
+                })
+              }
+              required
+            />
+            <input
+              type="number"
+              step="any"
+              placeholder="Szerokość geograficzna"
+              value={newDelivery.latitude}
+              onChange={(e) =>
+                setNewDelivery({ ...newDelivery, latitude: e.target.value })
+              }
+            />
+            <input
+              type="number"
+              step="any"
+              placeholder="Długość geograficzna"
+              value={newDelivery.longitude}
+              onChange={(e) =>
+                setNewDelivery({ ...newDelivery, longitude: e.target.value })
+              }
+            />
+            <textarea
+              placeholder="Uwagi"
+              value={newDelivery.notes}
+              onChange={(e) =>
+                setNewDelivery({ ...newDelivery, notes: e.target.value })
+              }
+              className="full-width"
+            />
+          </div>
+          <button type="submit" className="btn btn-success">
+            Utwórz Dostawę
+          </button>
+        </form>
+      )}
+
+      {/* Filtr */}
+      <div className="filter-bar">
+        <label>
+          Filtruj po statusie:
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+          >
+            <option value="">Wszystkie</option>
+            {statusOptions.map((status) => (
+              <option key={status} value={status}>
+                {statusLabels[status]}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
+      {/* Lista dostaw */}
+      <div className="deliveries-grid">
+        {deliveries.length === 0 ? (
+          <p className="no-data">Brak dostaw do wyświetlenia</p>
+        ) : (
+          deliveries.map((delivery) => (
+            <div key={delivery.id} className="delivery-card">
+              <div className="card-header">
+                <h3>Dostawa #{delivery.id}</h3>
+                <span
+                  className="status-badge"
+                  style={{ backgroundColor: statusColors[delivery.status] }}
+                >
+                  {statusLabels[delivery.status]}
+                </span>
+              </div>
+
+              <div className="card-body">
+                <p>
+                  <strong>Zamówienie:</strong> #{delivery.orderId}
+                </p>
+                <p>
+                  <strong>Klient:</strong> ID {delivery.customerId}
+                </p>
+                <p>
+                  <strong>Adres:</strong> {delivery.deliveryAddress}
+                </p>
+                <p>
+                  <strong>Telefon:</strong> {delivery.customerPhone}
+                </p>
+                {delivery.courierId && (
+                  <p>
+                    <strong>Kurier:</strong> ID {delivery.courierId}
+                  </p>
+                )}
+                {delivery.notes && (
+                  <p>
+                    <strong>Uwagi:</strong> {delivery.notes}
+                  </p>
+                )}
+                <p className="timestamp">
+                  <small>Utworzono: {new Date(delivery.createdAt).toLocaleString('pl-PL')}</small>
+                </p>
+                {delivery.deliveredAt && (
+                  <p className="timestamp">
+                    <small>Dostarczono: {new Date(delivery.deliveredAt).toLocaleString('pl-PL')}</small>
+                  </p>
+                )}
+              </div>
+
+              <div className="card-actions">
+                <select
+                  className="status-select"
+                  value={delivery.status}
+                  onChange={(e) =>
+                    handleStatusChange(delivery.id, e.target.value)
+                  }
+                >
+                  {statusOptions.map((status) => (
+                    <option key={status} value={status}>
+                      {statusLabels[status]}
+                    </option>
+                  ))}
+                </select>
+
+                {delivery.status === 'PENDING' && (
+                  <button
+                    className="btn btn-info"
+                    onClick={() => handleAssignCourier(delivery.id)}
+                  >
+                    Przypisz kuriera
+                  </button>
+                )}
+
+                <button
+                  className="btn btn-danger"
+                  onClick={() => handleDeleteDelivery(delivery.id)}
+                >
+                  Usuń
+                </button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+      </div>
+    </div>
+  );
+};
+
+export default DeliveryManagement;
+

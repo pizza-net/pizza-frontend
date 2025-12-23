@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { getUsers } from '../services/authService';
 import './Dashboard.css';
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -31,6 +33,22 @@ const Dashboard = () => {
         <div className="welcome-section">
           <h1>Welcome to Pizza Net Dashboard! 🍕</h1>
           <p>You have successfully logged in with JWT authentication.</p>
+        </div>
+
+        <div className="quick-actions-section">
+          <h2>Quick Actions</h2>
+          <div className="action-cards">
+            <div className="action-card" onClick={() => navigate('/pizzas')}>
+              <div className="action-icon">🍕</div>
+              <h3>Pizza Management</h3>
+              <p>Zarządzaj menu pizzy</p>
+            </div>
+            <div className="action-card" onClick={() => navigate('/deliveries')}>
+              <div className="action-icon">🚚</div>
+              <h3>Delivery Management</h3>
+              <p>Zarządzaj dostawami</p>
+            </div>
+          </div>
         </div>
 
         <div className="users-section">
