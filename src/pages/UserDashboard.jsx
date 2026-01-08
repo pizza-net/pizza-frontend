@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
+import Cart from '../components/Cart';
+import { useCart } from '../context/CartContext';
 import { getPizzas } from '../services/pizzaService';
 import './Dashboard.css';
 import './PizzaManagement.css';
@@ -9,7 +11,7 @@ const UserDashboard = () => {
   const [pizzas, setPizzas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [notification, setNotification] = useState('');
+  const { addToCart, toggleCart } = useCart();
 
   useEffect(() => {
     fetchPizzas();
@@ -28,43 +30,20 @@ const UserDashboard = () => {
   };
 
   const handleAddToCart = (pizza) => {
-    setNotification(`⚠️ Order Service nie jest jeszcze zaimplementowany!
-
-Pizza "${pizza.name}" zostałaby dodana do koszyka.
-
-Aby ta funkcja działała, potrzebny jest:
-- Order Service (zarządzanie zamówieniami)
-- Cart Service (zarządzanie koszykiem)
-- Payment Service (płatności)
-
-Backend musi zostać rozszerzony o te mikrousługi.`);
-    
-    setTimeout(() => setNotification(''), 5000);
+    addToCart(pizza);
+    toggleCart();
   };
 
   return (
     <div className="user-dashboard">
       <Navbar />
+      <Cart />
       
       <div className="dashboard-content">
         <div className="welcome-section">
           <h1>🍕 Pizza Net - Menu</h1>
           <p>Wybierz swoją ulubioną pizzę!</p>
         </div>
-
-        {notification && (
-          <div className="notification-modal">
-            <div className="notification-content">
-              <button 
-                className="close-btn"
-                onClick={() => setNotification('')}
-              >
-                ×
-              </button>
-              <pre>{notification}</pre>
-            </div>
-          </div>
-        )}
 
         <div className="users-section">
           <h2>Dostępne Pizze</h2>

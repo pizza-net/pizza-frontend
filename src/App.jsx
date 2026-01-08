@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
 import Login from './components/Login';
 import Register from './components/Register';
 import Dashboard from './pages/Dashboard';
@@ -15,9 +16,10 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+        <CartProvider>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
           
           {/* User Dashboard - dla zwykłych użytkowników */}
           <Route
@@ -61,6 +63,7 @@ function App() {
           <Route path="/" element={<RoleBasedRedirect />} />
           <Route path="*" element={<RoleBasedRedirect />} />
         </Routes>
+        </CartProvider>
       </AuthProvider>
     </Router>
   );

@@ -1,9 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 import './Navbar.css';
 
 const Navbar = () => {
   const { user, logout, isAdmin } = useAuth();
+  const { getTotalItems, toggleCart } = useCart();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -20,7 +22,6 @@ const Navbar = () => {
         
         <div className="navbar-menu">
           {isAdmin ? (
-            // Menu dla administratora
             <>
               <button onClick={() => navigate('/dashboard')} className="nav-btn">
                 📊 Dashboard
@@ -30,10 +31,17 @@ const Navbar = () => {
               </button>
             </>
           ) : (
-            // Menu dla zwykłego użytkownika
-            <button onClick={() => navigate('/user-dashboard')} className="nav-btn">
-              🍕 Menu
-            </button>
+            <>
+              <button onClick={() => navigate('/user-dashboard')} className="nav-btn">
+                🍕 Menu
+              </button>
+              <button onClick={toggleCart} className="nav-btn cart-btn">
+                🛒 Koszyk
+                {getTotalItems() > 0 && (
+                  <span className="cart-badge">{getTotalItems()}</span>
+                )}
+              </button>
+            </>
           )}
         </div>
 
