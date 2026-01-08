@@ -1,0 +1,92 @@
+/* UserDashboard używa stylów z Dashboard.css i PizzaManagement.css */
+/* Tutaj tylko specyficzne style dla User Dashboard */
+
+/* Przycisk "Dodaj do koszyka" zajmuje całą szerokość */
+.user-dashboard .add-to-cart-btn {
+  width: 100%;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.user-dashboard .add-to-cart-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(72, 187, 120, 0.3);
+}
+
+.user-dashboard .add-to-cart-btn:active {
+  transform: translateY(0);
+}
+
+/* Modal z powiadomieniem */
+.notification-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 2rem;
+}
+
+.notification-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 15px;
+  max-width: 600px;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.notification-content pre {
+  white-space: pre-wrap;
+  font-family: inherit;
+  line-height: 1.8;
+  color: #333;
+  margin: 0;
+}
+
+.close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: #ff4444;
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+  background: #cc0000;
+  transform: rotate(90deg);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .notification-modal {
+    padding: 1rem;
+  }
+  
+  .notification-content {
+    padding: 1.5rem;
+  }
+}

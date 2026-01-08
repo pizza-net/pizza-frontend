@@ -57,7 +57,7 @@ export const register = async (username, email, password) => {
  * Logowanie użytkownika
  * @param {string} username 
  * @param {string} password 
- * @returns {Promise<Object>} { token, username, message }
+ * @returns {Promise<Object>} { token, username, role, message }
  */
 export const login = async (username, password) => {
   try {
@@ -66,6 +66,7 @@ export const login = async (username, password) => {
     if (response.data.token) {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('username', response.data.username);
+      localStorage.setItem('role', response.data.role);
     }
     
     return response.data;
@@ -80,6 +81,7 @@ export const login = async (username, password) => {
 export const logout = () => {
   localStorage.removeItem('token');
   localStorage.removeItem('username');
+  localStorage.removeItem('role');
 };
 
 /**
@@ -124,6 +126,14 @@ export const getCurrentUsername = () => {
   return localStorage.getItem('username');
 };
 
+/**
+ * Pobranie aktualnej roli użytkownika
+ * @returns {string|null}
+ */
+export const getCurrentUserRole = () => {
+  return localStorage.getItem('role');
+};
+
 export default {
   register,
   login,
@@ -132,4 +142,5 @@ export default {
   getUsers,
   isAuthenticated,
   getCurrentUsername,
+  getCurrentUserRole,
 };

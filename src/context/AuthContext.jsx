@@ -4,6 +4,7 @@ import {
   logout as logoutService, 
   isAuthenticated as checkAuth,
   getCurrentUsername,
+  getCurrentUserRole,
   verifyToken
 } from '../services/authService';
 
@@ -26,10 +27,11 @@ export const AuthProvider = ({ children }) => {
     const initAuth = async () => {
       if (checkAuth()) {
         const username = getCurrentUsername();
+        const role = getCurrentUserRole();
         const isValid = await verifyToken();
         
         if (isValid && username) {
-          setUser({ username });
+          setUser({ username, role });
         } else {
           // Token wygasł lub jest nieprawidłowy
           logoutService();
@@ -45,7 +47,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (username, password) => {
     try {
       const data = await loginService(username, password);
-      setUser({ username: data.username });
+      setUser({ username: data.username, role: data.role });
       return { success: true, message: data.message };
     } catch (error) {
       return { success: false, message: error };
@@ -63,6 +65,8 @@ export const AuthProvider = ({ children }) => {
     logout,
     loading,
     isAuthenticated: !!user,
+    isAdmin: user?.role === 'ADMIN',
+    isUser: user?.role === 'USER',
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

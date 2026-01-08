@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
 
 const Navbar = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -19,18 +19,31 @@ const Navbar = () => {
         </div>
         
         <div className="navbar-menu">
-          <button onClick={() => navigate('/dashboard')} className="nav-btn">
-            📊 Dashboard
-          </button>
-          <button onClick={() => navigate('/pizzas')} className="nav-btn">
-            🍕 Pizze
-          </button>
+          {isAdmin ? (
+            // Menu dla administratora
+            <>
+              <button onClick={() => navigate('/dashboard')} className="nav-btn">
+                📊 Dashboard
+              </button>
+              <button onClick={() => navigate('/pizzas')} className="nav-btn">
+                🍕 Zarządzaj Pizzami
+              </button>
+            </>
+          ) : (
+            // Menu dla zwykłego użytkownika
+            <button onClick={() => navigate('/user-dashboard')} className="nav-btn">
+              🍕 Menu
+            </button>
+          )}
         </div>
 
         <div className="navbar-user">
-          <span className="username">Welcome, {user?.username}!</span>
+          <span className="username">
+            Witaj, {user?.username}! 
+            <span className="user-role">({isAdmin ? 'Admin' : 'Użytkownik'})</span>
+          </span>
           <button onClick={handleLogout} className="logout-btn">
-            Logout
+            Wyloguj
           </button>
         </div>
       </div>
