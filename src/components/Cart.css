@@ -385,10 +385,29 @@
   font-size: 1.8rem;
 }
 
+.success-content h3 {
+  color: #667eea;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+}
+
 .success-content p {
   margin: 0.75rem 0;
   color: #555;
   font-size: 1.05rem;
+}
+
+.success-content hr {
+  border: none;
+  border-top: 2px solid #e0e0e0;
+  margin: 1.5rem 0;
+}
+
+.payment-success {
+  color: #10b981;
+  font-weight: 600;
+  margin-top: 1rem;
 }
 
 .close-success-btn {

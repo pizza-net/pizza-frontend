@@ -49,6 +49,7 @@ const Cart = () => {
     setOrderError('');
 
     try {
+      // 1. Utwórz zamówienie
       const orderPayload = {
         customerId: 1,
         customerName: orderData.customerName,
@@ -61,15 +62,47 @@ const Cart = () => {
         })),
       };
 
-      const response = await createOrder(orderPayload);
-      setOrderSuccess(response);
-      clearCart();
-      setShowOrderForm(false);
-      
-      setTimeout(() => {
-        setOrderSuccess(null);
-        toggleCart();
-      }, 5000);
+      const orderResponse = await createOrder(orderPayload);
+
+      // 2. Utwórz Stripe Checkout Session i przekieruj
+      const checkoutResponse = await fetch('/api/payments/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          orderId: orderResponse.id,
+          customerId: 1,
+          amount: orderResponse.totalPrice,
+          currency: 'pln',
+          description: `Płatność za zamówienie #${orderResponse.id}`,
+          customerEmail: orderData.customerName + '@pizza-net.com' // opcjonalnie
+        })
+      });
+
+      if (!checkoutResponse.ok) {
+        const errorText = await checkoutResponse.text();
+        console.error('❌ Błąd tworzenia sesji:', errorText);
+        throw new Error('Nie udało się utworzyć sesji płatności');
+      }
+
+      const responseData = await checkoutResponse.json();
+      console.log('✅ Odpowiedź z backendu:', responseData);
+
+      // Backend może zwrócić checkoutUrl lub sessionUrl
+      const stripeUrl = responseData.checkoutUrl || responseData.sessionUrl;
+      console.log('🔗 Przekierowanie do:', stripeUrl);
+
+      // Redirect do Stripe Checkout
+      if (stripeUrl && stripeUrl.startsWith('http')) {
+        console.log('🚀 Przekierowuję do Stripe Checkout...');
+        window.location.href = stripeUrl;
+      } else {
+        console.error('❌ Otrzymano nieprawidłowy URL:', stripeUrl);
+        throw new Error('Backend zwrócił nieprawidłowy URL płatności');
+      }
+
     } catch (error) {
       setOrderError(error.toString());
     } finally {
@@ -234,6 +267,17 @@ const Cart = () => {
               <p>Status: {orderSuccess.status}</p>
               <p>Całkowita kwota: {orderSuccess.totalPrice.toFixed(2)} PLN</p>
               <p>ID dostawy: #{orderSuccess.deliveryId}</p>
+              {orderSuccess.payment && (
+                <>
+                  <hr />
+                  <h3>💳 Płatność</h3>
+                  <p>Status płatności: <strong>{orderSuccess.payment.status}</strong></p>
+                  <p>ID płatności: {orderSuccess.payment.paymentId}</p>
+                  {orderSuccess.payment.status === 'COMPLETED' && (
+                    <p className="payment-success">✅ Płatność zakończona pomyślnie</p>
+                  )}
+                </>
+              )}
               <button
                 className="close-success-btn"
                 onClick={() => {

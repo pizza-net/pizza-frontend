@@ -38,7 +38,7 @@ const UserDashboard = () => {
     <div className="user-dashboard">
       <Navbar />
       <Cart />
-      
+
       <div className="dashboard-content">
         <div className="welcome-section">
           <h1>🍕 Pizza Net - Menu</h1>

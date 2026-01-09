@@ -7,6 +7,8 @@ import Dashboard from './pages/Dashboard';
 import UserDashboard from './pages/UserDashboard';
 import PizzaManagement from './pages/PizzaManagement';
 import DeliveryManagement from './pages/DeliveryManagement';
+import PaymentSuccess from './pages/PaymentSuccess';
+import PaymentCancel from './pages/PaymentCancel';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 import RoleBasedRedirect from './components/RoleBasedRedirect';
@@ -59,6 +61,24 @@ function App() {
             }
           />
           
+          {/* Strony płatności */}
+          <Route
+            path="/payment-success"
+            element={
+              <ProtectedRoute>
+                <PaymentSuccess />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/payment-cancel"
+            element={
+              <ProtectedRoute>
+                <PaymentCancel />
+              </ProtectedRoute>
+            }
+          />
+
           {/* Redirect na podstawie roli */}
           <Route path="/" element={<RoleBasedRedirect />} />
           <Route path="*" element={<RoleBasedRedirect />} />
