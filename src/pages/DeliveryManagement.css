@@ -266,3 +266,60 @@
   }
 }
 
+/* Style dla listy zamówionych pizz w kartach dostaw */
+.order-items-section {
+  background: #f8f9fa;
+  border-radius: 6px;
+  padding: 0.75rem;
+  margin: 0.75rem 0;
+  border-left: 4px solid #ffa726;
+}
+
+.order-items-list {
+  margin: 0.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.order-item-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: white;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.order-item-inline .item-quantity {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  min-width: 35px;
+  text-align: center;
+}
+
+.order-item-inline .item-name {
+  flex: 1;
+  color: #333;
+  font-weight: 600;
+}
+
+.order-item-inline .item-price {
+  color: #28a745;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.order-total {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #dee2e6;
+  color: #333;
+  font-size: 1rem;
+}
+

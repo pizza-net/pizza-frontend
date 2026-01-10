@@ -7,11 +7,13 @@ import {
   assignCourier,
   deleteDelivery,
 } from '../services/deliveryService';
+import { getOrderById } from '../services/orderService';
 import './Dashboard.css';
 import './DeliveryManagement.css';
 
 const DeliveryManagement = () => {
   const [deliveries, setDeliveries] = useState([]);
+  const [orders, setOrders] = useState({}); // Przechowuje szczegóły zamówień { orderId: orderData }
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -67,6 +69,19 @@ const DeliveryManagement = () => {
       const filters = filterStatus ? { status: filterStatus } : {};
       const data = await getAllDeliveries(filters);
       setDeliveries(data);
+
+      // Pobierz szczegóły zamówień dla każdej dostawy
+      const ordersMap = {};
+      for (const delivery of data) {
+        try {
+          const orderData = await getOrderById(delivery.orderId);
+          ordersMap[delivery.orderId] = orderData;
+        } catch (err) {
+          console.log(`Nie udało się pobrać zamówienia ${delivery.orderId}:`, err);
+        }
+      }
+      setOrders(ordersMap);
+
       setError('');
     } catch (err) {
       setError(err.message || 'Błąd podczas pobierania dostaw');
@@ -285,7 +300,10 @@ const DeliveryManagement = () => {
         {deliveries.length === 0 ? (
           <p className="no-data">Brak dostaw do wyświetlenia</p>
         ) : (
-          deliveries.map((delivery) => (
+          deliveries.map((delivery) => {
+            const order = orders[delivery.orderId]; // Pobierz szczegóły zamówienia
+
+            return (
             <div key={delivery.id} className="delivery-card">
               <div className="card-header">
                 <h3>Dostawa #{delivery.id}</h3>
@@ -301,6 +319,26 @@ const DeliveryManagement = () => {
                 <p>
                   <strong>Zamówienie:</strong> #{delivery.orderId}
                 </p>
+
+                {/* Lista zamówionych pizz */}
+                {order && order.items && order.items.length > 0 && (
+                  <div className="order-items-section">
+                    <p><strong>🍕 Zamówione pizze:</strong></p>
+                    <div className="order-items-list">
+                      {order.items.map((item, index) => (
+                        <div key={index} className="order-item-inline">
+                          <span className="item-quantity">{item.quantity}x</span>
+                          <span className="item-name">{item.pizzaName || `Pizza #${item.pizzaId}`}</span>
+                          {item.subtotal && (
+                            <span className="item-price">{item.subtotal.toFixed(2)} PLN</span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                    <p className="order-total"><strong>Łącznie:</strong> {order.totalPrice.toFixed(2)} PLN</p>
+                  </div>
+                )}
+
                 <p>
                   <strong>Klient:</strong> ID {delivery.customerId}
                 </p>
@@ -362,7 +400,8 @@ const DeliveryManagement = () => {
                 </button>
               </div>
             </div>
-          ))
+            );
+          })
         )}
       </div>
       </div>
