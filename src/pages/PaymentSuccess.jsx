@@ -58,6 +58,10 @@ const PaymentSuccess = () => {
     navigate('/user-dashboard');
   };
 
+  const handleTrackOrder = () => {
+    navigate('/order-tracking');
+  };
+
   if (isVerifying) {
     return (
       <div className="payment-result-page">
@@ -120,9 +124,14 @@ const PaymentSuccess = () => {
           <p>Zamówienie zostało przekazane do realizacji.</p>
         </div>
 
-        <button className="btn-primary" onClick={handleBackToDashboard}>
-          Powrót do Dashboard
-        </button>
+        <div className="action-buttons">
+          <button className="btn-primary btn-track" onClick={handleTrackOrder}>
+            📦 Śledź zamówienie
+          </button>
+          <button className="btn-secondary" onClick={handleBackToDashboard}>
+            Powrót do Dashboard
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import Login from './components/Login';
@@ -9,6 +9,7 @@ import PizzaManagement from './pages/PizzaManagement';
 import DeliveryManagement from './pages/DeliveryManagement';
 import PaymentSuccess from './pages/PaymentSuccess';
 import PaymentCancel from './pages/PaymentCancel';
+import OrderTracking from './pages/OrderTracking';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 import RoleBasedRedirect from './components/RoleBasedRedirect';
@@ -32,7 +33,17 @@ function App() {
               </ProtectedRoute>
             }
           />
-          
+
+          {/* Order Tracking - śledzenie zamówień dla użytkowników */}
+          <Route
+            path="/order-tracking"
+            element={
+              <ProtectedRoute>
+                <OrderTracking />
+              </ProtectedRoute>
+            }
+          />
+
           {/* Admin Dashboard - tylko dla adminów */}
           <Route
             path="/dashboard" 

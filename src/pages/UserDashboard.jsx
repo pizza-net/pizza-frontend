@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Cart from '../components/Cart';
 import { useCart } from '../context/CartContext';
@@ -12,6 +13,7 @@ const UserDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const { addToCart, toggleCart } = useCart();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchPizzas();
@@ -43,6 +45,12 @@ const UserDashboard = () => {
         <div className="welcome-section">
           <h1>🍕 Pizza Net - Menu</h1>
           <p>Wybierz swoją ulubioną pizzę!</p>
+          <button
+            className="track-orders-btn"
+            onClick={() => navigate('/order-tracking')}
+          >
+            📦 Moje zamówienia
+          </button>
         </div>
 
         <div className="users-section">

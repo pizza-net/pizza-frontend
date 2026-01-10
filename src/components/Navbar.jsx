@@ -35,6 +35,9 @@ const Navbar = () => {
               <button onClick={() => navigate('/user-dashboard')} className="nav-btn">
                 🍕 Menu
               </button>
+              <button onClick={() => navigate('/order-tracking')} className="nav-btn">
+                📦 Moje zamówienia
+              </button>
               <button onClick={toggleCart} className="nav-btn cart-btn">
                 🛒 Koszyk
                 {getTotalItems() > 0 && (
