@@ -49,6 +49,8 @@ const Cart = () => {
     setOrderError('');
 
     try {
+      console.log('🔄 Rozpoczynam proces składania zamówienia...');
+      
       // 1. Utwórz zamówienie
       const orderPayload = {
         customerId: 1,
@@ -62,37 +64,44 @@ const Cart = () => {
         })),
       };
 
+      console.log('📦 Tworzę zamówienie:', orderPayload);
       const orderResponse = await createOrder(orderPayload);
+      console.log('✅ Zamówienie utworzone:', orderResponse);
 
       // 2. Utwórz Stripe Checkout Session i przekieruj
+      const paymentPayload = {
+        orderId: orderResponse.id,
+        customerId: 1,
+        amount: orderResponse.totalPrice,
+        currency: 'pln',
+        description: `Płatność za zamówienie #${orderResponse.id}`,
+        customerEmail: orderData.customerName + '@pizza-net.com'
+      };
+      
+      console.log('💳 Tworzę sesję płatności:', paymentPayload);
       const checkoutResponse = await fetch('/api/payments/create-checkout-session', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
-        body: JSON.stringify({
-          orderId: orderResponse.id,
-          customerId: 1,
-          amount: orderResponse.totalPrice,
-          currency: 'pln',
-          description: `Płatność za zamówienie #${orderResponse.id}`,
-          customerEmail: orderData.customerName + '@pizza-net.com' // opcjonalnie
-        })
+        body: JSON.stringify(paymentPayload)
       });
+
+      console.log('📡 Status odpowiedzi payment-service:', checkoutResponse.status);
 
       if (!checkoutResponse.ok) {
         const errorText = await checkoutResponse.text();
         console.error('❌ Błąd tworzenia sesji:', errorText);
-        throw new Error('Nie udało się utworzyć sesji płatności');
+        throw new Error('Nie udało się utworzyć sesji płatności: ' + errorText);
       }
 
       const responseData = await checkoutResponse.json();
-      console.log('✅ Odpowiedź z backendu:', responseData);
+      console.log('✅ Odpowiedź z payment-service:', responseData);
 
       // Backend może zwrócić checkoutUrl lub sessionUrl
-      const stripeUrl = responseData.checkoutUrl || responseData.sessionUrl;
-      console.log('🔗 Przekierowanie do:', stripeUrl);
+      const stripeUrl = responseData.checkoutUrl || responseData.sessionUrl || responseData.url;
+      console.log('🔗 URL przekierowania:', stripeUrl);
 
       // Redirect do Stripe Checkout
       if (stripeUrl && stripeUrl.startsWith('http')) {
@@ -100,10 +109,12 @@ const Cart = () => {
         window.location.href = stripeUrl;
       } else {
         console.error('❌ Otrzymano nieprawidłowy URL:', stripeUrl);
+        console.error('❌ Cała odpowiedź:', responseData);
         throw new Error('Backend zwrócił nieprawidłowy URL płatności');
       }
 
     } catch (error) {
+      console.error('❌ Błąd w procesie zamówienia:', error);
       setOrderError(error.toString());
     } finally {
       setIsSubmitting(false);
