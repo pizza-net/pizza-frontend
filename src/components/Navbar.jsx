@@ -4,13 +4,19 @@ import { useCart } from '../context/CartContext';
 import './Navbar.css';
 
 const Navbar = () => {
-  const { user, logout, isAdmin } = useAuth();
+  const { user, logout, isAdmin, isCourier } = useAuth();
   const { getTotalItems, toggleCart } = useCart();
   const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
     navigate('/login');
+  };
+
+  const getUserRoleLabel = () => {
+    if (isAdmin) return 'Admin';
+    if (isCourier) return 'Kurier';
+    return 'Użytkownik';
   };
 
   return (
@@ -30,6 +36,9 @@ const Navbar = () => {
                 🍕 Zarządzaj Pizzami
               </button>
             </>
+          ) : isCourier ? (
+            // Kurier nie ma menu nawigacji - tylko widzi panel dostaw
+            <></>
           ) : (
             <>
               <button onClick={() => navigate('/user-dashboard')} className="nav-btn">
@@ -51,7 +60,7 @@ const Navbar = () => {
         <div className="navbar-user">
           <span className="username">
             Witaj, {user?.username}! 
-            <span className="user-role">({isAdmin ? 'Admin' : 'Użytkownik'})</span>
+            <span className="user-role">({getUserRoleLabel()})</span>
           </span>
           <button onClick={handleLogout} className="logout-btn">
             Wyloguj

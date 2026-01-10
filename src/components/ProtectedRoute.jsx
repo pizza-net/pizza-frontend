@@ -2,7 +2,7 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, isCourier, isAdmin, loading } = useAuth();
 
   if (loading) {
     return (
@@ -21,6 +21,15 @@ const ProtectedRoute = ({ children }) => {
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
+  }
+
+  // Przekieruj na podstawie roli - tylko USER ma dostęp
+  if (isCourier) {
+    return <Navigate to="/courier-dashboard" replace />;
+  }
+
+  if (isAdmin) {
+    return <Navigate to="/dashboard" replace />;
   }
 
   return children;

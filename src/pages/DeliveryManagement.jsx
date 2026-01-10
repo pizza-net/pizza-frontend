@@ -7,18 +7,22 @@ import {
   assignCourier,
   deleteDelivery,
 } from '../services/deliveryService';
+import { getCouriers } from '../services/authService';
 import { getOrderById } from '../services/orderService';
 import './Dashboard.css';
 import './DeliveryManagement.css';
 
 const DeliveryManagement = () => {
   const [deliveries, setDeliveries] = useState([]);
+  const [couriers, setCouriers] = useState([]);
   const [orders, setOrders] = useState({}); // Przechowuje szczegóły zamówień { orderId: orderData }
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [filterStatus, setFilterStatus] = useState('');
+  const [assigningDeliveryId, setAssigningDeliveryId] = useState(null);
+  const [selectedCourierId, setSelectedCourierId] = useState('');
 
   // Formularz nowej dostawy
   const [newDelivery, setNewDelivery] = useState({
@@ -58,9 +62,10 @@ const DeliveryManagement = () => {
     CANCELLED: 'Anulowana',
   };
 
-  // Pobierz dostawy
+  // Pobierz dostawy i kurierów
   useEffect(() => {
     fetchDeliveries();
+    fetchCouriers();
   }, [filterStatus]);
 
   const fetchDeliveries = async () => {
@@ -87,6 +92,15 @@ const DeliveryManagement = () => {
       setError(err.message || 'Błąd podczas pobierania dostaw');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchCouriers = async () => {
+    try {
+      const data = await getCouriers();
+      setCouriers(data);
+    } catch (err) {
+      console.error('Błąd podczas pobierania kurierów:', err);
     }
   };
 
@@ -137,17 +151,27 @@ const DeliveryManagement = () => {
     }
   };
 
-  // Przypisz kuriera
-  const handleAssignCourier = async (id) => {
-    const courierId = prompt('Podaj ID kuriera:');
-    if (!courierId) return;
+  // Przypisz kuriera - otwórz modal wyboru
+  const handleAssignCourierClick = (deliveryId) => {
+    setAssigningDeliveryId(deliveryId);
+    setSelectedCourierId('');
+  };
+
+  // Przypisz kuriera - potwierdź wybór
+  const handleAssignCourier = async () => {
+    if (!selectedCourierId) {
+      alert('Wybierz kuriera');
+      return;
+    }
 
     setError('');
     setSuccess('');
 
     try {
-      await assignCourier(id, Number(courierId));
+      await assignCourier(assigningDeliveryId, Number(selectedCourierId));
       setSuccess('Kurier przypisany pomyślnie!');
+      setAssigningDeliveryId(null);
+      setSelectedCourierId('');
       fetchDeliveries();
     } catch (err) {
       setError(err.message || 'Błąd podczas przypisywania kuriera');
@@ -196,6 +220,53 @@ const DeliveryManagement = () => {
 
       {error && <div className="alert alert-error">{error}</div>}
       {success && <div className="alert alert-success">{success}</div>}
+
+      {/* Modal przypisywania kuriera */}
+      {assigningDeliveryId && (
+        <div className="modal-overlay" onClick={() => setAssigningDeliveryId(null)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>Przypisz kuriera do dostawy #{assigningDeliveryId}</h2>
+            <div style={{ marginTop: '1rem' }}>
+              <label>
+                <strong>Wybierz kuriera:</strong>
+                <select
+                  value={selectedCourierId}
+                  onChange={(e) => setSelectedCourierId(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    marginTop: '0.5rem',
+                    borderRadius: '4px',
+                    border: '1px solid #ddd'
+                  }}
+                >
+                  <option value="">-- Wybierz kuriera --</option>
+                  {couriers.map((courier) => (
+                    <option key={courier.id} value={courier.id}>
+                      {courier.username} (ID: {courier.id})
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
+              <button
+                className="btn btn-success"
+                onClick={handleAssignCourier}
+                disabled={!selectedCourierId}
+              >
+                Potwierdź
+              </button>
+              <button
+                className="btn btn-secondary"
+                onClick={() => setAssigningDeliveryId(null)}
+              >
+                Anuluj
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Formularz tworzenia dostawy */}
       {showCreateForm && (
@@ -386,7 +457,7 @@ const DeliveryManagement = () => {
                 {delivery.status === 'PENDING' && (
                   <button
                     className="btn btn-info"
-                    onClick={() => handleAssignCourier(delivery.id)}
+                    onClick={() => handleAssignCourierClick(delivery.id)}
                   >
                     Przypisz kuriera
                   </button>

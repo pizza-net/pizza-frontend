@@ -5,6 +5,7 @@ import Login from './components/Login';
 import Register from './components/Register';
 import Dashboard from './pages/Dashboard';
 import UserDashboard from './pages/UserDashboard';
+import CourierDashboard from './pages/CourierDashboard';
 import PizzaManagement from './pages/PizzaManagement';
 import DeliveryManagement from './pages/DeliveryManagement';
 import PaymentSuccess from './pages/PaymentSuccess';
@@ -12,6 +13,7 @@ import PaymentCancel from './pages/PaymentCancel';
 import OrderTracking from './pages/OrderTracking';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
+import CourierRoute from './components/CourierRoute';
 import RoleBasedRedirect from './components/RoleBasedRedirect';
 import './App.css';
 
@@ -31,6 +33,16 @@ function App() {
               <ProtectedRoute>
                 <UserDashboard />
               </ProtectedRoute>
+            }
+          />
+
+          {/* Courier Dashboard - dla kurierów */}
+          <Route
+            path="/courier-dashboard"
+            element={
+              <CourierRoute>
+                <CourierDashboard />
+              </CourierRoute>
             }
           />
 
@@ -63,12 +75,13 @@ function App() {
               </AdminRoute>
             }
           />
+          {/* Delivery Management - tylko dla adminów */}
           <Route
             path="/deliveries"
             element={
-              <ProtectedRoute>
+              <AdminRoute>
                 <DeliveryManagement />
-              </ProtectedRoute>
+              </AdminRoute>
             }
           />
           

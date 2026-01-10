@@ -1,8 +1,8 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-const RoleBasedRedirect = () => {
-  const { isAuthenticated, isAdmin, isCourier, loading } = useAuth();
+const CourierRoute = ({ children }) => {
+  const { isAuthenticated, isCourier, loading } = useAuth();
 
   if (loading) {
     return (
@@ -23,14 +23,11 @@ const RoleBasedRedirect = () => {
     return <Navigate to="/login" replace />;
   }
 
-  // Przekieruj na podstawie roli
-  if (isAdmin) {
-    return <Navigate to="/dashboard" replace />;
-  } else if (isCourier) {
-    return <Navigate to="/courier-dashboard" replace />;
-  } else {
-    return <Navigate to="/user-dashboard" replace />;
+  if (!isCourier) {
+    return <Navigate to="/" replace />;
   }
+
+  return children;
 };
 
-export default RoleBasedRedirect;
+export default CourierRoute;

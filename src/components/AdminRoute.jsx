@@ -2,7 +2,7 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const AdminRoute = ({ children }) => {
-  const { isAuthenticated, isAdmin, loading } = useAuth();
+  const { isAuthenticated, isAdmin, isCourier, loading } = useAuth();
 
   if (loading) {
     return (
@@ -24,7 +24,10 @@ const AdminRoute = ({ children }) => {
   }
 
   if (!isAdmin) {
-    // Jeśli użytkownik jest zalogowany ale nie jest adminem, przekieruj do user dashboard
+    // Przekieruj na podstawie roli
+    if (isCourier) {
+      return <Navigate to="/courier-dashboard" replace />;
+    }
     return <Navigate to="/user-dashboard" replace />;
   }
 

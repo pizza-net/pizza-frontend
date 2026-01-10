@@ -57,7 +57,7 @@ export const register = async (username, email, password) => {
  * Logowanie użytkownika
  * @param {string} username 
  * @param {string} password 
- * @returns {Promise<Object>} { token, username, role, message }
+ * @returns {Promise<Object>} { token, userId, username, role, message }
  */
 export const login = async (username, password) => {
   try {
@@ -65,6 +65,7 @@ export const login = async (username, password) => {
     
     if (response.data.token) {
       localStorage.setItem('token', response.data.token);
+      localStorage.setItem('userId', response.data.userId);
       localStorage.setItem('username', response.data.username);
       localStorage.setItem('role', response.data.role);
     }
@@ -80,6 +81,7 @@ export const login = async (username, password) => {
  */
 export const logout = () => {
   localStorage.removeItem('token');
+  localStorage.removeItem('userId');
   localStorage.removeItem('username');
   localStorage.removeItem('role');
 };
@@ -107,6 +109,19 @@ export const getUsers = async () => {
     return response.data;
   } catch (err) {
     throw err.response?.data?.message || 'Failed to fetch users';
+  }
+};
+
+/**
+ * Pobieranie listy kurierów (wymaga autentykacji)
+ * @returns {Promise<Array>}
+ */
+export const getCouriers = async () => {
+  try {
+    const response = await api.get('/couriers');
+    return response.data;
+  } catch (err) {
+    throw err.response?.data?.message || 'Failed to fetch couriers';
   }
 };
 
@@ -140,6 +155,7 @@ export default {
   logout,
   verifyToken,
   getUsers,
+  getCouriers,
   isAuthenticated,
   getCurrentUsername,
   getCurrentUserRole,
