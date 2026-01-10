@@ -32,6 +32,7 @@ const OrderTracking = () => {
 
   const orderStatusLabels = {
     PENDING: 'Oczekujące',
+    CONFIRMED: 'Potwierdzone',
     PREPARING: 'W przygotowaniu',
     READY: 'Gotowe',
     DELIVERED: 'Dostarczone',
@@ -51,9 +52,11 @@ const OrderTracking = () => {
       const ordersData = await getOrders();
 
       // Sortuj zamówienia po dacie (najnowsze na górze)
-      const sortedOrders = ordersData.sort((a, b) =>
-        new Date(b.orderDate) - new Date(a.orderDate)
-      );
+      const sortedOrders = ordersData.sort((a, b) => {
+        const dateA = new Date(a.orderDate || a.createdAt);
+        const dateB = new Date(b.orderDate || b.createdAt);
+        return dateB - dateA;
+      });
 
       setOrders(sortedOrders);
 
@@ -161,7 +164,7 @@ const OrderTracking = () => {
                     <div className="order-info">
                       <h3>Zamówienie #{order.id}</h3>
                       <p className="order-date">
-                        {new Date(order.orderDate).toLocaleString('pl-PL')}
+                        {new Date(order.orderDate || order.createdAt).toLocaleString('pl-PL')}
                       </p>
                     </div>
                     <div className="order-status">
@@ -184,6 +187,26 @@ const OrderTracking = () => {
                       <span className="value price">{order.totalPrice.toFixed(2)} PLN</span>
                     </div>
                   </div>
+
+                  {/* Lista zamówionych pizz */}
+                  {order.items && order.items.length > 0 && (
+                    <div className="order-items-section">
+                      <h4>🍕 Zamówione pizze:</h4>
+                      <div className="order-items-list">
+                        {order.items.map((item, index) => (
+                          <div key={index} className="order-item">
+                            <span className="item-quantity">{item.quantity}x</span>
+                            <span className="item-name">{item.pizzaName || `Pizza #${item.pizzaId}`}</span>
+                            {(item.subtotal || item.pricePerItem) && (
+                              <span className="item-price">
+                                {item.subtotal ? item.subtotal.toFixed(2) : (item.pricePerItem * item.quantity).toFixed(2)} PLN
+                              </span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Sekcja śledzenia dostawy */}
                   {delivery ? (

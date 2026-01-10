@@ -196,6 +196,67 @@
   font-size: 1.1rem;
 }
 
+/* Lista zamówionych pizz */
+.order-items-section {
+  background: #fff8f0;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+  border: 2px solid #ffa726;
+}
+
+.order-items-section h4 {
+  margin: 0 0 1rem 0;
+  color: #e65100;
+  font-size: 1.1rem;
+}
+
+.order-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.order-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: white;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.order-item:hover {
+  transform: translateX(5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.item-quantity {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 15px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  min-width: 45px;
+  text-align: center;
+}
+
+.item-name {
+  flex: 1;
+  color: #333;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.item-price {
+  color: #28a745;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
 .delivery-tracking {
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   border-radius: 12px;
@@ -379,6 +440,26 @@
   .detail-item {
     flex-direction: column;
     gap: 0.25rem;
+  }
+
+  .order-item {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .item-quantity {
+    min-width: 40px;
+    font-size: 0.85rem;
+  }
+
+  .item-name {
+    font-size: 0.95rem;
+  }
+
+  .item-price {
+    font-size: 0.95rem;
+    width: 100%;
+    text-align: right;
   }
 }
 
