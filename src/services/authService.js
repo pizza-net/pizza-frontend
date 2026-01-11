@@ -126,6 +126,21 @@ export const getCouriers = async () => {
 };
 
 /**
+ * Zmiana roli użytkownika (tylko dla adminów)
+ * @param {number} userId 
+ * @param {string} role - 'USER', 'ADMIN', lub 'COURIER'
+ * @returns {Promise<Object>}
+ */
+export const updateUserRole = async (userId, role) => {
+  try {
+    const response = await api.patch(`/users/${userId}/role`, { role });
+    return response.data;
+  } catch (err) {
+    throw err.response?.data?.message || 'Failed to update user role';
+  }
+};
+
+/**
  * Sprawdzenie czy użytkownik jest zalogowany
  * @returns {boolean}
  */
@@ -156,6 +171,7 @@ export default {
   verifyToken,
   getUsers,
   getCouriers,
+  updateUserRole,
   isAuthenticated,
   getCurrentUsername,
   getCurrentUserRole,

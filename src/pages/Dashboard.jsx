@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
-import { getUsers } from '../services/authService';
+import { getUsers, updateUserRole } from '../services/authService';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -9,21 +9,44 @@ const Dashboard = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [updatingUserId, setUpdatingUserId] = useState(null);
+
+  const fetchUsers = async () => {
+    try {
+      const data = await getUsers();
+      setUsers(data);
+    } catch (err) {
+      setError(err.toString());
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const data = await getUsers();
-        setUsers(data);
-      } catch (err) {
-        setError(err.toString());
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchUsers();
   }, []);
+
+  const handleRoleChange = async (userId, newRole) => {
+    try {
+      setUpdatingUserId(userId);
+      await updateUserRole(userId, newRole);
+      // Odśwież listę użytkowników
+      await fetchUsers();
+      setUpdatingUserId(null);
+    } catch (err) {
+      alert('Nie udało się zmienić roli: ' + err);
+      setUpdatingUserId(null);
+    }
+  };
+
+  const getRoleBadgeColor = (role) => {
+    switch(role) {
+      case 'ADMIN': return '#ef4444';
+      case 'COURIER': return '#3b82f6';
+      case 'USER': return '#10b981';
+      default: return '#6b7280';
+    }
+  };
 
   return (
     <div className="dashboard">
@@ -71,7 +94,45 @@ const Dashboard = () => {
                   </div>
                   <div className="user-info">
                     <h3>{user.username}</h3>
-                    <p className="user-role">{user.role}</p>
+                    <div style={{ 
+                      display: 'inline-block',
+                      padding: '0.25rem 0.75rem',
+                      backgroundColor: getRoleBadgeColor(user.role) + '20',
+                      color: getRoleBadgeColor(user.role),
+                      borderRadius: '999px',
+                      fontSize: '0.875rem',
+                      fontWeight: '600',
+                      marginBottom: '0.5rem'
+                    }}>
+                      {user.role}
+                    </div>
+                    <div style={{ marginTop: '0.75rem' }}>
+                      <label style={{ 
+                        fontSize: '0.875rem', 
+                        color: '#6b7280',
+                        marginBottom: '0.25rem',
+                        display: 'block'
+                      }}>
+                        Zmień rolę:
+                      </label>
+                      <select
+                        value={user.role}
+                        onChange={(e) => handleRoleChange(user.id, e.target.value)}
+                        disabled={updatingUserId === user.id}
+                        style={{
+                          width: '100%',
+                          padding: '0.5rem',
+                          border: '1px solid #d1d5db',
+                          borderRadius: '6px',
+                          fontSize: '0.875rem',
+                          cursor: updatingUserId === user.id ? 'wait' : 'pointer'
+                        }}
+                      >
+                        <option value="USER">USER</option>
+                        <option value="ADMIN">ADMIN</option>
+                        <option value="COURIER">COURIER</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
               ))}
