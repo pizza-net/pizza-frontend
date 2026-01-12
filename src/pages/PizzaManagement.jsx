@@ -21,6 +21,15 @@ const PizzaManagement = () => {
     imageUrl: ''
   });
 
+  const getSizeInPolish = (size) => {
+    const sizeMap = {
+      'SMALL': 'mała',
+      'MEDIUM': 'średnia',
+      'LARGE': 'duża'
+    };
+    return sizeMap[size] || size;
+  };
+
   useEffect(() => {
     fetchPizzas();
   }, []);
@@ -319,7 +328,7 @@ const PizzaManagement = () => {
                   <div className="pizza-details">
                     <div className="pizza-info-item">
                       <span className="info-label">Rozmiar:</span>
-                      <span className="info-value">{pizza.size}</span>
+                      <span className="info-value">{getSizeInPolish(pizza.size)}</span>
                     </div>
                     <div className="pizza-info-item">
                       <span className="info-label">Cena:</span>

@@ -56,7 +56,7 @@ export const verifyPayment = async (verificationData) => {
     const response = await paymentApi.post('/verify', verificationData);
     return response.data;
   } catch (error) {
-    throw error.response?.data?.message || 'Failed to verify payment';
+    throw error.response?.data?.message || 'Nie udało się zweryfikować płatności';
   }
 };
 

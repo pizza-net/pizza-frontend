@@ -30,7 +30,7 @@ const Navbar = () => {
           {isAdmin ? (
             <>
               <button onClick={() => navigate('/dashboard')} className="nav-btn">
-                📊 Dashboard
+                📊 Kokpit
               </button>
               <button onClick={() => navigate('/pizzas')} className="nav-btn">
                 🍕 Zarządzaj Pizzami

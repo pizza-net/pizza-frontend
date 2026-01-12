@@ -54,34 +54,34 @@ const Dashboard = () => {
       
       <div className="dashboard-content">
         <div className="welcome-section">
-          <h1>Welcome to Pizza Net Dashboard! 🍕</h1>
-          <p>You have successfully logged in with JWT authentication.</p>
+          <h1>Witaj w Panelu Administracyjnym Pizza Net! 🍕</h1>
+          <p>Zalogowano pomyślnie z użyciem uwierzytelnienia JWT.</p>
         </div>
 
         <div className="quick-actions-section">
-          <h2>Quick Actions</h2>
+          <h2>Szybkie Akcje</h2>
           <div className="action-cards">
             <div className="action-card" onClick={() => navigate('/pizzas')}>
               <div className="action-icon">🍕</div>
-              <h3>Pizza Management</h3>
+              <h3>Zarządzanie Pizzami</h3>
               <p>Zarządzaj menu pizzy</p>
             </div>
             <div className="action-card" onClick={() => navigate('/deliveries')}>
               <div className="action-icon">🚚</div>
-              <h3>Delivery Management</h3>
+              <h3>Zarządzanie Dostawami</h3>
               <p>Zarządzaj dostawami</p>
             </div>
           </div>
         </div>
 
         <div className="users-section">
-          <h2>Registered Users</h2>
+          <h2>Zarejestrowani Użytkownicy</h2>
           
-          {loading && <p className="loading">Loading users...</p>}
+          {loading && <p className="loading">Ładowanie użytkowników...</p>}
           
           {error && (
             <div className="error-box">
-              <p>Error loading users: {error}</p>
+              <p>Błąd ładowania użytkowników: {error}</p>
             </div>
           )}
           
@@ -140,24 +140,24 @@ const Dashboard = () => {
           )}
           
           {!loading && !error && users.length === 0 && (
-            <p className="no-users">No users found.</p>
+            <p className="no-users">Nie znaleziono użytkowników.</p>
           )}
         </div>
 
         <div className="info-section">
-          <h2>System Information</h2>
+          <h2>Informacje o Systemie</h2>
           <div className="info-cards">
             <div className="info-card">
-              <h3>🔐 Authentication</h3>
-              <p>JWT with 24h expiration</p>
+              <h3>🔐 Uwierzytelnianie</h3>
+              <p>JWT z czasem wygaśnięcia 24h</p>
             </div>
             <div className="info-card">
               <h3>🌐 CORS</h3>
-              <p>Configured for localhost:5173</p>
+              <p>Skonfigurowane dla localhost:8085</p>
             </div>
             <div className="info-card">
-              <h3>🔒 Security</h3>
-              <p>BCrypt password hashing</p>
+              <h3>🔒 Bezpieczeństwo</h3>
+              <p>Szyfrowanie hasła BCrypt</p>
             </div>
           </div>
         </div>

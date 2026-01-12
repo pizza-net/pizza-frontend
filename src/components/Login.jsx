@@ -18,7 +18,7 @@ const Login = () => {
     setLoading(true);
 
     if (!username || !password) {
-      setError('Please enter both username and password');
+      setError('Wprowadź nazwę użytkownika i hasło');
       setLoading(false);
       return;
     }
@@ -28,7 +28,7 @@ const Login = () => {
     if (result.success) {
       navigate('/dashboard');
     } else {
-      setError(result.message || 'Invalid username or password');
+      setError(result.message || 'Nieprawidłowa nazwa użytkownika lub hasło');
     }
     
     setLoading(false);
@@ -38,30 +38,30 @@ const Login = () => {
     <div className="login-container">
       <div className="login-box">
         <h1>🍕 Pizza Net</h1>
-        <h2>Login</h2>
-        
+        <h2>Logowanie</h2>
+
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="username">Username</label>
+            <label htmlFor="username">Nazwa użytkownika</label>
             <input
               type="text"
               id="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="Enter your username"
+              placeholder="Wprowadź nazwę użytkownika"
               disabled={loading}
               autoComplete="username"
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">Hasło</label>
             <input
               type="password"
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
+              placeholder="Wprowadź hasło"
               disabled={loading}
               autoComplete="current-password"
             />
@@ -70,15 +70,10 @@ const Login = () => {
           {error && <div className="error-message">{error}</div>}
 
           <button type="submit" disabled={loading}>
-            {loading ? 'Logging in...' : 'Login'}
+            {loading ? 'Logowanie...' : 'Zaloguj się'}
           </button>
         </form>
 
-        <div className="demo-credentials">
-          <p><strong>Demo credentials:</strong></p>
-          <p>Username: admin</p>
-          <p>Password: admin123</p>
-        </div>
 
         <div className="register-link">
           <p>Nie masz konta? <Link to="/register">Zarejestruj się</Link></p>

@@ -15,6 +15,15 @@ const UserDashboard = () => {
   const { addToCart, toggleCart } = useCart();
   const navigate = useNavigate();
 
+  const getSizeInPolish = (size) => {
+    const sizeMap = {
+      'SMALL': 'Mała',
+      'MEDIUM': 'Średnia',
+      'LARGE': 'Duża'
+    };
+    return sizeMap[size] || size;
+  };
+
   useEffect(() => {
     fetchPizzas();
   }, []);
@@ -83,7 +92,7 @@ const UserDashboard = () => {
                   <div className="pizza-details">
                     <div className="pizza-info-item">
                       <span className="info-label">Rozmiar:</span>
-                      <span className="info-value">{pizza.size}</span>
+                      <span className="info-value">{getSizeInPolish(pizza.size)}</span>
                     </div>
                     <div className="pizza-info-item">
                       <span className="info-label">Cena:</span>

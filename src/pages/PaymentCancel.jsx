@@ -31,7 +31,7 @@ const PaymentCancel = () => {
 
         <div className="action-buttons">
           <button className="btn-secondary" onClick={handleBackToCart}>
-            Wróć do Dashboard
+            Wróć do Kokpitu
           </button>
           <button className="btn-primary" onClick={handleTryAgain}>
             Spróbuj Ponownie

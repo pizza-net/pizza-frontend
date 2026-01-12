@@ -39,7 +39,7 @@ export const createOrder = async (orderData) => {
     const response = await orderApi.post('', orderData);
     return response.data;
   } catch (error) {
-    throw error.response?.data?.message || 'Failed to create order';
+    throw error.response?.data?.message || 'Nie udało się utworzyć zamówienia';
   }
 };
 
@@ -48,7 +48,7 @@ export const getOrders = async () => {
     const response = await orderApi.get('');
     return response.data;
   } catch (error) {
-    throw error.response?.data?.message || 'Failed to fetch orders';
+    throw error.response?.data?.message || 'Nie udało się pobrać zamówień';
   }
 };
 
@@ -57,7 +57,7 @@ export const getOrderById = async (id) => {
     const response = await orderApi.get(`/${id}`);
     return response.data;
   } catch (error) {
-    throw error.response?.data?.message || 'Failed to fetch order';
+    throw error.response?.data?.message || 'Nie udało się pobrać zamówienia';
   }
 };
 
@@ -66,7 +66,7 @@ export const getOrdersByCustomerId = async (customerId) => {
     const response = await orderApi.get(`?customerId=${customerId}`);
     return response.data;
   } catch (error) {
-    throw error.response?.data?.message || 'Failed to fetch customer orders';
+    throw error.response?.data?.message || 'Nie udało się pobrać zamówień klienta';
   }
 };
 
@@ -75,7 +75,7 @@ export const updateOrderStatus = async (id, status) => {
     const response = await orderApi.patch(`/${id}/status?status=${status}`);
     return response.data;
   } catch (error) {
-    throw error.response?.data?.message || 'Failed to update order status';
+    throw error.response?.data?.message || 'Nie udało się zaktualizować statusu zamówienia';
   }
 };
 
@@ -84,6 +84,6 @@ export const deleteOrder = async (id) => {
     const response = await orderApi.delete(`/${id}`);
     return response.data;
   } catch (error) {
-    throw error.response?.data?.message || 'Failed to delete order';
+    throw error.response?.data?.message || 'Nie udało się usunąć zamówienia';
   }
 };

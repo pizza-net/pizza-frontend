@@ -49,7 +49,7 @@ export const register = async (username, email, password) => {
     const response = await api.post('/register', { username, email, password });
     return { success: true, message: response.data };
   } catch (error) {
-    throw error.response?.data || 'Registration failed';
+    throw error.response?.data || 'Rejestracja nie powiodła się';
   }
 };
 
@@ -72,7 +72,7 @@ export const login = async (username, password) => {
     
     return response.data;
   } catch (error) {
-    throw error.response?.data?.message || 'Login failed';
+    throw error.response?.data?.message || 'Logowanie nie powiodło się';
   }
 };
 

@@ -82,7 +82,7 @@ const PaymentSuccess = () => {
           <h1>Błąd Weryfikacji</h1>
           <p className="error-message">{error}</p>
           <button className="btn-primary" onClick={handleBackToDashboard}>
-            Powrót do Dashboard
+            Powrót do Kokpitu
           </button>
         </div>
       </div>
@@ -129,7 +129,7 @@ const PaymentSuccess = () => {
             📦 Śledź zamówienie
           </button>
           <button className="btn-secondary" onClick={handleBackToDashboard}>
-            Powrót do Dashboard
+            Powrót do Kokpitu
           </button>
         </div>
       </div>

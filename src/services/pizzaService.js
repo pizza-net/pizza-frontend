@@ -39,7 +39,7 @@ export const getPizzas = async () => {
     const response = await pizzaApi.get('');
     return response.data;
   } catch (error) {
-    throw error.response?.data?.message || 'Failed to fetch pizzas';
+    throw error.response?.data?.message || 'Nie udało się pobrać pizz';
   }
 };
 
@@ -48,7 +48,7 @@ export const addPizza = async (pizzaData) => {
     const response = await pizzaApi.post('', pizzaData);
     return response.data;
   } catch (error) {
-    throw error.response?.data?.message || 'Failed to add pizza';
+    throw error.response?.data?.message || 'Nie udało się dodać pizzy';
   }
 };
 
@@ -58,7 +58,7 @@ export const deletePizza = async (id) => {
     const response = await pizzaApi.delete(`/${id}`);
     return response.data;
   } catch (error) {
-    throw error.response?.data?.message || 'Failed to delete pizza';
+    throw error.response?.data?.message || 'Nie udało się usunąć pizzy';
   }
 };
 
@@ -67,7 +67,7 @@ export const updatePizza = async (id, pizzaData) => {
     const response = await pizzaApi.put(`/${id}`, pizzaData);
     return response.data;
   } catch (error) {
-    throw error.response?.data?.message || 'Failed to update pizza';
+    throw error.response?.data?.message || 'Nie udało się zaktualizować pizzy';
   }
 };
 

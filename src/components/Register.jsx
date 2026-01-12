@@ -28,7 +28,7 @@ const Register = () => {
     }
 
     if (username.length < 3 || username.length > 20) {
-      setError('Login musi mieć od 3 do 20 znaków');
+      setError('Nazwa użytkownika musi mieć od 3 do 20 znaków');
       setLoading(false);
       return;
     }
@@ -75,13 +75,13 @@ const Register = () => {
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="username">Login</label>
+            <label htmlFor="username">Nazwa użytkownika</label>
             <input
               type="text"
               id="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="Wprowadź login (3-20 znaków)"
+              placeholder="Wprowadź nazwę użytkownika (3-20 znaków)"
               disabled={loading}
               autoComplete="username"
             />

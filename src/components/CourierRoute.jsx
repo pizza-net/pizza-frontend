@@ -14,7 +14,7 @@ const CourierRoute = ({ children }) => {
         fontSize: '1.5rem',
         color: '#667eea'
       }}>
-        Loading...
+        Ładowanie...
       </div>
     );
   }
