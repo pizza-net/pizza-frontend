@@ -48,6 +48,15 @@ const Dashboard = () => {
     }
   };
 
+  const getRoleDisplayName = (role) => {
+    switch(role) {
+      case 'ADMIN': return 'Administrator';
+      case 'COURIER': return 'Kurier';
+      case 'USER': return 'Użytkownik';
+      default: return role;
+    }
+  };
+
   return (
     <div className="dashboard">
       <Navbar />
@@ -104,14 +113,15 @@ const Dashboard = () => {
                       fontWeight: '600',
                       marginBottom: '0.5rem'
                     }}>
-                      {user.role}
+                      {getRoleDisplayName(user.role)}
                     </div>
                     <div style={{ marginTop: '0.75rem' }}>
                       <label style={{ 
                         fontSize: '0.875rem', 
-                        color: '#6b7280',
+                        color: '#2c3e50',
                         marginBottom: '0.25rem',
-                        display: 'block'
+                        display: 'block',
+                        fontWeight: '500'
                       }}>
                         Zmień rolę:
                       </label>
@@ -128,9 +138,9 @@ const Dashboard = () => {
                           cursor: updatingUserId === user.id ? 'wait' : 'pointer'
                         }}
                       >
-                        <option value="USER">USER</option>
-                        <option value="ADMIN">ADMIN</option>
-                        <option value="COURIER">COURIER</option>
+                        <option value="USER">Użytkownik</option>
+                        <option value="ADMIN">Administrator</option>
+                        <option value="COURIER">Kurier</option>
                       </select>
                     </div>
                   </div>
